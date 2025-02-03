@@ -42,6 +42,8 @@ This creates a `.codex/` folder containing:
 │── config.yaml      # Codex configuration (optional)
 ```
 
+> **Note:** You may want to add `.codex/memory.json`, `.codex/docs.md`, or `.codex/config.yaml` to your project's `.gitignore`, as these files contain dynamically updated data or local configuration settings.
+
 ### Fetch documentation from a website
 ```sh
 codex fetch-docs https://example.com/docs

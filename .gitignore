@@ -1,0 +1,38 @@
+# Byte-compiled / temporary files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+
+# Virtual environment
+venv/
+.env
+.envrc
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs & debugging files
+logs/
+*.log
+*.out
+*.err
+
+# Editor & OS-specific files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Coverage & testing files
+.coverage
+htmlcov/
+.cache/
+.mypy_cache/
+pytest_cache/
+
+# Codex-generated package files
+.codex/
