@@ -1,72 +1,59 @@
 # Codex - AI-Powered Context & Memory Toolset
 
-## 🚀 Overview
-**Codex** is an **IDE-agnostic AI toolset** that enhances coding assistants by providing **dynamic documentation ingestion** and **long-term memory management**. It allows AI coding assistants to fetch up-to-date docs, retain project memory, and work more efficiently across different IDEs.
+Codex is a powerful toolset designed to enhance AI-assisted development by providing intelligent documentation management and persistent project memory capabilities. It helps AI coding assistants better understand your project context by automatically fetching, processing, and organizing documentation from various sources, while maintaining a structured memory of project-specific preferences and decisions.
 
-## ✨ Features
-- **📖 Dynamic Documentation Ingestion** – Uses **Crawl4AI** to fetch and format documentation for AI.
-- **🧠 AI Long-Term Memory** – Manages AI assistant memory with **Mem0**, enabling persistent knowledge.
-- **🔄 Local & Offline** – Runs fully on your local machine, no API keys or cloud dependencies required.
-- **📂 Per-Project Context** – Initializes a `.codex/` folder in each project to store configurations, memory, and docs.
-- **🛠️ CLI for AI Assistants** – Provides an interface for LLM-powered assistants to fetch relevant data on demand.
+It's inspired by [Cursor Docs Symbol](https://docs.cursor.com/context/@-symbols/@-docs) and by [Cline Memory Bank](https://github.com/nickbaumann98/cline_docs/blob/main/prompting/custom%20instructions%20library/cline-memory-bank.md).
 
-## 📥 Installation
+## Key Features
+- 📚 **Smart Documentation Fetching**: Automatically crawls and processes documentation from a base URL (multithreaded)
+- 🧠 **Persistent Project Memory**: Stores and manages project-specific context and preferences
+- 🤖 **AI-Assistant Integration**: Seamlessly works with your favorite AI coding assistants
+
+## Usage
+1. Initialize Codex in your project:
 ```sh
-# Clone the repo
-git clone git@github.com:livingstonlarus/codex.git
-cd codex
-
-# Set up virtual environment (optional, recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install Codex as a CLI tool
-pip install .
-```
-
-## 🔧 Usage
-### Initialize Codex in a project
-```sh
-cd my_project
 codex init
 ```
-This creates a `.codex/` folder containing:
-```
-.codex/
-│── spec.md          # AI-generated project specification (User-defined)
-│── spec.example.md  # AI Architect prompt template (Reference only)
-│── memory.json      # AI assistant’s dynamic memory (Managed by Codex)
-│── config.yaml      # Codex configuration (optional)
-```
+This will create a `.codex` directory in your project with all necessary configuration files.
 
-> **Note:** You may want to add `.codex/memory.json`, `.codex/docs.md`, or `.codex/config.yaml` to your project's `.gitignore`, as these files contain dynamically updated data or local configuration settings.
+2. Set up your AI coding assistant:
+   - Open your preferred AI coding assistant (Cursor, Cody, or any other assistant with file editing capabilities)
+   - Start a new chat session
+   - First prompt your assistant with:
+     ```
+     Follow your instructions in .codex/instruct.md
+     ```
+   Your AI assistant will now be configured with Codex's enhanced context and memory capabilities.
 
-### Fetch documentation from a website
+## 🤝 Contributing
+### Using Docker
+You can develop using Docker to ensure a consistent environment:
+
 ```sh
-codex fetch-docs https://example.com/docs
-```
-This scrapes the website and stores structured docs in `.codex/docs.md`.
-
-### Store project memory
-```sh
-codex add-memory "User prefers TypeScript over JavaScript."
-```
-This persists project-specific AI memory to `memory.json`.
-
-## 🛠 Development
-```sh
-git clone git@github.com:livingstonlarus/codex.git
+# Clone the repository
+git clone https://github.com/livingstonlarus/codex.git
 cd codex
-git remote add origin git@github.com:livingstonlarus/codex.git
 
-# Install dependencies
-pip install -r requirements.txt
+# Build the Docker image
+docker build -t codex .
+
+# Run the container with the current directory mounted
+docker run -it -v .:/app codex shell
+
+# Install Codex from inside the container
+pip install -e .
+
+# Test the Codex initialization
+codex init
 ```
 
-To contribute, submit a pull request!
+This will give you a shell inside the container with the local project files mounted at `/app`. Any changes you make locally will be reflected inside the container, and vice-versa.
+
+To contribute:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## 📜 License
 **Codex** is open-source under the **MIT License**.

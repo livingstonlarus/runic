@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codex"
+version = "0.1"
+description = "AI Coding Assistant Toolset"
+requires-python = ">=3.7"
+dependencies = [
+    "click",
+    "requests",
+    "beautifulsoup4",
+    "lxml",
+    "markdownify"
+]
+
+[tool.setuptools]
+packages = {find = {include = ["codex", "codex.*"]}}
+include-package-data = true
+
+[tool.setuptools.package-data]
+codex = [
+    "templates/**/*"
+]
+
+[project.scripts]
+codex = "codex.cli:cli"
