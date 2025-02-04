@@ -14,6 +14,7 @@ venv/
 dist/
 build/
 *.egg-info/
+.pypirc
 
 # Logs & debugging files
 logs/

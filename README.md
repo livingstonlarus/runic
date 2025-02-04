@@ -1,6 +1,6 @@
-add# Runic - AI-Powered Context & Memory Toolset
+# Runic - LLM Memory & Documentation Enhancement Framework
 
-Runic is an open-source framework that enhances Large Language Models (LLMs) through with Long-Term Memory (LTM) and Retrieval-Augmented Generation (RAG) layers. By implementing these capabilities as distinct, interoperable layers, Runic enables LLMs to retain context, adapt over time, and access up-to-date information. While it particularly shines in enhancing AI coding assistants with intelligent documentation management and persistent project memory, its versatile architecture makes it suitable for any AI application requiring structured knowledge retention and contextual awareness - from content generation to decision support systems.
+Runic is an open-source framework that enhances Large Language Models (LLMs) with Long-Term Memory (LTM) and Retrieval-Augmented Generation (RAG) layers. By implementing these capabilities as distinct, interoperable layers, Runic enables LLMs to retain context, adapt over time, and access up-to-date information. While it particularly shines in enhancing AI coding assistants with intelligent documentation management and persistent project memory, its versatile architecture makes it suitable for any AI application requiring structured knowledge retention and contextual awareness - from content generation to decision support systems.
 
 It's inspired by [Cursor Docs Symbol](https://docs.cursor.com/context/@-symbols/@-docs) and by [Cline Memory Bank](https://github.com/nickbaumann98/cline_docs/blob/main/prompting/custom%20instructions%20library/cline-memory-bank.md).
 
@@ -50,6 +50,11 @@ While Runic started as an AI coding assistant enhancer, it's evolving into a gen
 - [ ] Enhance main content detection and filtering
 - [ ] Add support for various documentation formats and structures
 - [ ] Implement rate limiting and politeness delays
+
+#### More Layers
+- [ ] Evaluate porting our RAG layer to Crawl4AI
+- [ ] Evaluate porting our LTM layer to Mem0
+- [ ] Expand LLM capabilities with more layers
 
 ## 📜 License
 **Runic** is open-source under the **MIT License**.
