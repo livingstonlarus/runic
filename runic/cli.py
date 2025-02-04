@@ -37,7 +37,7 @@ def init():
     target_dir = Path(".runic")
     if not target_dir.exists():
         shutil.copytree(templates_dir, target_dir)
-        print("✅ Runic initialized in this project. Prompt your AI coding assistant with: 'Follow your instructions in .runic/instruct.md' to begin.")
+        print("✅ Runic initialized in this project. Prompt your AI assistant with: 'Follow your instructions in .runic/instruct.md' to begin.")
     else:
         print("⚠️ Runic is already initialized in this project.")
 

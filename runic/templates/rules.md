@@ -8,6 +8,7 @@
 
 ## Git Practices
 - Write clear commit messages
+- Always properly quote the commit message
 - Create feature branches for new work
 - Keep commits atomic and focused
 - Pull and rebase before pushing
