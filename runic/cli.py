@@ -4,10 +4,12 @@ import os
 from pathlib import Path
 from runic.docs import Docs
 from runic.memory import Memory
+import importlib.metadata
 
 @click.group()
+@click.version_option(importlib.metadata.version('runic'))
 def cli():
-    """Runic CLI - AI Coding Assistant Toolset"""
+    """Runic CLI - LLM Memory & Documentation Enhancement Framework"""
     pass
 
 @click.command()
