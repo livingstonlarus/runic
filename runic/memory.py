@@ -3,7 +3,7 @@ from datetime import datetime
 
 class Memory:
     def __init__(self):
-        self.memory_dir = Path(".codex/memory")
+        self.memory_dir = Path(".runic/memory")
         self.memory_dir.mkdir(parents=True, exist_ok=True)
         
         # Initialize memory files

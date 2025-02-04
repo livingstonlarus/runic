@@ -34,5 +34,5 @@ htmlcov/
 .mypy_cache/
 pytest_cache/
 
-# Codex-generated package files
-.codex/
+# Runic-generated package files
+.runic/

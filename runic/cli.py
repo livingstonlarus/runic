@@ -2,12 +2,12 @@ import click
 import shutil
 import os
 from pathlib import Path
-from codex.docs import Docs
-from codex.memory import Memory
+from runic.docs import Docs
+from runic.memory import Memory
 
 @click.group()
 def cli():
-    """Codex CLI - AI Coding Assistant Toolset"""
+    """Runic CLI - AI Coding Assistant Toolset"""
     pass
 
 @click.command()
@@ -15,12 +15,12 @@ def cli():
 def docs(url):
     """Fetch documentation from given URL"""
     try:
-        # Create output directory in .codex/docs
-        docs_dir = Path(".codex/docs")
+        # Create output directory in .runic/docs
+        docs_dir = Path(".runic/docs")
         docs_dir.mkdir(parents=True, exist_ok=True)
         
         # Set the output directory for spider
-        os.environ['CODEX_DOCS_DIR'] = str(docs_dir)
+        os.environ['RUNIC_DOCS_DIR'] = str(docs_dir)
         
         # Crawl and process the documentation
         Docs.crawl_website(url)
@@ -29,17 +29,17 @@ def docs(url):
 
 @click.command()
 def init():
-    """Initialize Codex in the current project"""
+    """Initialize Runic in the current project"""
     # Get templates directory path from package
     templates_dir = Path(__file__).parent / "templates"
     
     # Create target directory by copying templates
-    target_dir = Path(".codex")
+    target_dir = Path(".runic")
     if not target_dir.exists():
         shutil.copytree(templates_dir, target_dir)
-        print("✅ Codex initialized in this project. Prompt your AI coding assistant with: 'Follow your instructions in .codex/instruct.md' to begin.")
+        print("✅ Runic initialized in this project. Prompt your AI coding assistant with: 'Follow your instructions in .runic/instruct.md' to begin.")
     else:
-        print("⚠️ Codex is already initialized in this project.")
+        print("⚠️ Runic is already initialized in this project.")
 
 
 cli.add_command(init)

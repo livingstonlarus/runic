@@ -3,9 +3,9 @@ requires = ["setuptools>=64.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "codex"
+name = "runic"
 version = "0.1"
-description = "AI Coding Assistant Toolset"
+description = "An open-source framework that enhances Large Language Models (LLMs) with Long-Term Memory (LTM) and Retrieval-Augmented Generation (RAG). Ideal for AI coding assistants and other applications, it enables LLMs to retain context, adapt over time, and access up to date information, ensuring more intelligent and context-aware interactions."
 requires-python = ">=3.7"
 dependencies = [
     "click",
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = {find = {include = ["codex", "codex.*"]}}
+packages = {find = {include = ["runic", "runic.*"]}}
 include-package-data = true
 
 [tool.setuptools.package-data]
@@ -25,4 +25,4 @@ codex = [
 ]
 
 [project.scripts]
-codex = "codex.cli:cli"
+runic = "runic.cli:cli"

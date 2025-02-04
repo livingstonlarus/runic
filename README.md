@@ -1,6 +1,6 @@
-# Codex - AI-Powered Context & Memory Toolset
+# Runic - AI-Powered Context & Memory Toolset
 
-Codex is a powerful toolset designed to enhance AI-assisted development by providing intelligent documentation management and persistent project memory capabilities. It helps AI coding assistants better understand your project context by automatically fetching, processing, and organizing documentation from various sources, while maintaining a structured memory of project-specific preferences and decisions.
+Runic is an open-source framework that enhances Large Language Models (LLMs) through with Long-Term Memory (LTM) and Retrieval-Augmented Generation (RAG) layers. By implementing these capabilities as distinct, interoperable layers, Runic enables LLMs to retain context, adapt over time, and access up-to-date information. While it particularly shines in enhancing AI coding assistants with intelligent documentation management and persistent project memory, its versatile architecture makes it suitable for any AI application requiring structured knowledge retention and contextual awareness - from content generation to decision support systems.
 
 It's inspired by [Cursor Docs Symbol](https://docs.cursor.com/context/@-symbols/@-docs) and by [Cline Memory Bank](https://github.com/nickbaumann98/cline_docs/blob/main/prompting/custom%20instructions%20library/cline-memory-bank.md).
 
@@ -10,45 +10,21 @@ It's inspired by [Cursor Docs Symbol](https://docs.cursor.com/context/@-symbols/
 - 🤖 **AI-Assistant Integration**: Seamlessly works with your favorite AI coding assistants
 
 ## Usage
-1. Initialize Codex in your project:
+1. Initialize Runic in your project:
 ```sh
-codex init
+runic init
 ```
-This will create a `.codex` directory in your project with all necessary configuration files.
+This will create a `.runic` directory in your project with all necessary files and folders.
 
-2. Set up your AI coding assistant:
-   - Open your preferred AI coding assistant (Cursor, Cody, or any other assistant with file editing capabilities)
+2. Initialize your AI chat or AI coding assistant:
    - Start a new chat session
-   - First prompt your assistant with:
+   - First prompt the LLM with:
      ```
-     Follow your instructions in .codex/instruct.md
+     Follow your instructions in .runic/instruct.md
      ```
-   Your AI assistant will now be configured with Codex's enhanced context and memory capabilities.
+   Your AI assistant will now be augmented with Runic's enhanced context and memory capabilities.
 
 ## 🤝 Contributing
-### Using Docker
-You can develop using Docker to ensure a consistent environment:
-
-```sh
-# Clone the repository
-git clone https://github.com/livingstonlarus/codex.git
-cd codex
-
-# Build the Docker image
-docker build -t codex .
-
-# Run the container with the current directory mounted
-docker run -it -v .:/app codex shell
-
-# Install Codex from inside the container
-pip install -e .
-
-# Test the Codex initialization
-codex init
-```
-
-This will give you a shell inside the container with the local project files mounted at `/app`. Any changes you make locally will be reflected inside the container, and vice-versa.
-
 To contribute:
 1. Fork the repository
 2. Create a feature branch
@@ -56,4 +32,4 @@ To contribute:
 4. Submit a pull request
 
 ## 📜 License
-**Codex** is open-source under the **MIT License**.
+**Runic** is open-source under the **MIT License**.

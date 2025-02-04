@@ -57,8 +57,8 @@ def save_markdown(url, content, base_title):
     # Add .md extension to the last part
     path_parts[-1] += '.md'
     
-    # Create the full path under .codex/docs/base_title
-    docs_dir = os.environ.get('CODEX_DOCS_DIR', os.path.join('.codex', 'docs'))
+    # Create the full path under .runic/docs/base_title
+    docs_dir = os.environ.get('RUNIC_DOCS_DIR', os.path.join('.runic', 'docs'))
     base_dir = os.path.join(docs_dir, base_title)
     full_path = os.path.join(base_dir, *path_parts)
     
