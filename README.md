@@ -163,6 +163,21 @@ While Runic started as an AI coding assistant enhancer, it's evolving into a gen
 - [ ] And evaluate use of LangChain or LlamaIndex to facilitate integration of embeddings and vector stores (tools to manage data ingestion, embedding generation, and retrieval processes). What about Mem0?
 - [ ] Evaluate using Crawl4AI and alternatives in place of our own spider
 
+Suggestion:
+Keep Runic's simplicity but add a thin layer of embedding/retrieval? Like:
+```python
+# Still keep the MD files as source of truth
+memory_files = Path(".runic/memory").glob("*.md")
+
+# But maintain a local vector store (e.g., ChromaDB) that indexes them
+# and only pull relevant chunks when needed
+relevant_context = chroma.query(
+    current_conversation_embedding,
+    n_results=3
+)
+```
+Keeping the simple, git-friendly MD files but get smarter retrieval.
+
 #### Context Adaptability
 - [ ] Create templates for various use cases beyond coding
 - [ ] Implement context-based template selection
