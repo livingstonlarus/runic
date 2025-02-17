@@ -109,7 +109,8 @@ def scrape_page(url, base_url, base_title):
             soup.find(class_='entry-content') or
             soup.find(class_='markdown-body') or
             soup.find(id='content') or
-            soup.find(id='main-content')
+            soup.find(id='main-content') or
+            soup.find(class_='api-content')
         )
 
         if main_content:
