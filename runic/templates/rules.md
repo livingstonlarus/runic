@@ -12,6 +12,7 @@
 - Create feature branches for new work
 - Keep commits atomic and focused
 - Pull and rebase before pushing
+- Use consistent branch naming conventions (e.g., `feature/feature-name`, `bugfix/bug-description`, `task/task-name`)
 
 ## Testing
 - Write unit tests for new features
