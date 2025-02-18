@@ -26,7 +26,11 @@ def docs(url):
         os.environ['RUNIC_DOCS_DIR'] = str(docs_dir)
 
         # Crawl and process the documentation
-        Docs.crawl_website(url)
+        success = Docs.crawl_website(url)
+        if success:
+            print(f"✅ Documentation fetched successfully from {url}!")
+        else:
+            print(f"❌ Failed to fetch documentation completely from {url}, but some content might have been saved.")
     except Exception as e:
         print(f"❌ Failed to fetch documentation from {url}: {str(e)}")
 
