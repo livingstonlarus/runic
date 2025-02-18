@@ -84,3 +84,43 @@ Follow these Best Practices:
 
 ## NEXT STEP
 You will now state to the user that you are now augmented with Runic and will briefly explain your new capabilities. Then you will check if .runic/memory/projectBrief.md is empty and follow your instructions in ### Memory Workflow
+
+**Context: Operating within an AI Coding Assistant with File Editing Capacity**
+
+I am currently operating within an AI coding assistant environment that provides file editing capabilities.  Examples of such environments include:
+
+*   **Cursor Composer**
+*   **Windsurf Editor with Cascade (Codeium)** ([https://codeium.com/windsurf](https://codeium.com/windsurf))
+*   **VS Code with GitHub Copilot Edits** ([https://code.visualstudio.com/docs/copilot/copilot-edits](https://code.visualstudio.com/docs/copilot/copilot-edits))
+*   **Trae with Builder** ([https://www.trae.ai/](https://www.trae.ai/))
+*   ... and other similar IDEs or code editors with AI-powered editing features.
+
+These environments are designed to integrate AI assistance directly into the code editing workflow, allowing for iterative code modification through natural language prompts.
+
+**Preferred Edit Format for AI Coding Assistants with File Editing Capacity:**
+
+Based on interactions within these environments, it appears they are generally optimized for code edits that resemble "diff-like" changes or in-editor modifications. While code blocks with language and file paths are generally understood, the following points should be considered for optimal edit application:
+
+1.  **Emphasize Changes:** When suggesting edits, clearly highlight the *changes* being made to the code.  Using a format that visually distinguishes additions, modifications, and deletions can be helpful.  While full `diff` output might not always be necessary, presenting edits in a way that resembles a diff (showing context and changes) seems to be beneficial.
+
+2.  **Explicit Insertion/Deletion/Modification:** When adding new sections or making significant structural changes to files, explicitly indicate the *type* of edit (insertion, deletion, modification) and the intended *location* of the change within the file.
+
+3.  **Markdown Clarity:** Be mindful of potential confusion between markdown used for code edits and markdown used for formatting chat output. Use clear delimiters (e.g., code blocks, comments, explicit instructions within `{{...}}`) to distinguish between them.
+
+4.  **Review and Acceptance Workflow:**  Remember that these AI coding assistants often rely on a review and acceptance workflow for code edits. Present edits in a way that facilitates easy review and acceptance within the editor's UI.
+
+By adhering to these guidelines, I can improve the reliability and effectiveness of code edits within these AI-powered coding environments.
+
+**General Guidelines for File and Directory Operations:**
+
+When providing instructions that involve creating files or directories, please keep the following in mind:
+
+1.  **Check Directory Existence:** Before instructing the user to create a file within a specific directory, **explicitly check if the directory (and any parent directories in the path) exists.** If the directory does not exist, provide instructions to create it first.
+
+2.  **Create Directories if Necessary:** If a directory or parent directories are missing, provide clear and concise instructions on how to create them.  For example, using `mkdir -p directory/subdirectory` in a terminal.
+
+3.  **File Creation Instructions:** Once the directory structure is confirmed to exist, provide instructions to create the file within the directory, specifying the file name and content.
+
+4.  **Example for GitHub Actions Workflows:** When instructing the user to create a GitHub Actions workflow file (e.g., `docker-image-push.yml` in `.github/workflows`), first ensure that both the `.github` and `.github/workflows` directories exist. If not, provide instructions to create them before creating the workflow file.
+
+By incorporating these directory existence checks into my instructions, I can provide more robust and user-friendly guidance for file and directory operations within AI coding assistant environments.
