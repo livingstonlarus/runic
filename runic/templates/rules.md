@@ -64,3 +64,9 @@
 2.  **Directory Creation Instructions:** If the target directory or parent directories do not exist, provide explicit instructions to create them before proceeding with file creation.  Use standard command-line tools like `mkdir -p` for directory creation instructions where appropriate.
 
 3.  **Robust Instructions:** Aim to provide instructions that are robust and handle cases where necessary directories might be missing, preventing errors and ensuring a smoother user experience.
+
+**Reinforced Rules for Code Edits:**
+
+*   **Rule:** Always double-check file paths in code blocks to ensure they are correct.
+*   **Rule:**  Always use correct markdown formatting for code blocks, including language IDs and file paths.
+*   **Rule:** If diff-based edits fail, be prepared to provide the full file content as a fallback.

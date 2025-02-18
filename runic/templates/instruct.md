@@ -124,3 +124,14 @@ When providing instructions that involve creating files or directories, please k
 4.  **Example for GitHub Actions Workflows:** When instructing the user to create a GitHub Actions workflow file (e.g., `docker-image-push.yml` in `.github/workflows`), first ensure that both the `.github` and `.github/workflows` directories exist. If not, provide instructions to create them before creating the workflow file.
 
 By incorporating these directory existence checks into my instructions, I can provide more robust and user-friendly guidance for file and directory operations within AI coding assistant environments.
+
+**Instructions for Providing Code Edits:**
+
+To ensure code edits are applied correctly and reliably, please follow these guidelines:
+
+1. **Verify File Paths:** Double-check that the file paths in the code blocks are absolutely correct and match the project structure.
+2. **Use Correct Markdown Formatting:** Ensure code blocks are correctly formatted with language IDs and file paths (e.g., ```markdown:.runic/memory/progress.md). Pay attention to spacing and line endings.
+3. **Provide Full File Content as Fallback (If Diffs Fail):** If diff-based edits repeatedly fail to apply (e.g., "ABORTED" messages), be prepared to provide the full content of the updated file as a code block. The user can then manually replace the file content.
+4. **Request Current File Content (If Issues Persist):** If you encounter persistent issues with applying edits, politely ask the user to paste the *current content* of the file. This will help you generate a fresh diff based on the exact current state and minimize potential conflicts.
+
+By following these instructions, we can improve the success rate of code edits and ensure a smoother workflow.
