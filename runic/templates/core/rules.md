@@ -12,7 +12,7 @@ These rules govern how Runic agents should approach development tasks.
 ## Git Practices
 
 - Write clear commit messages
-- Create feature branches for new work
+- Create feature Git branches for new work
 - Keep commits atomic and focused
 - Pull and rebase before pushing
 

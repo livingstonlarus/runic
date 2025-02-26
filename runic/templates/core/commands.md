@@ -9,4 +9,4 @@
 `$track status`: Display all track statuses
 `$track init <name>`: Initialize new track
 `$track <name>`: Focus on specific track
-`$branch update`: Update feature branch
+`$branch update`: Update feature Git branch

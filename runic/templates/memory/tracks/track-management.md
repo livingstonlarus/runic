@@ -1,6 +1,6 @@
 # Track Management
 
-Tracks are conceptual workstreams representing distinct functional areas that persist over time and may span multiple branches.
+Tracks are conceptual workstreams representing distinct functional areas that persist over time and may span multiple Git branches.
 
 ## Track Initialization
 
@@ -45,11 +45,11 @@ When checking track status with **$track status**:
 3. Summarize the status of each track
 4. Highlight any conflicts or blockers
 
-## Branch Management
+## Git branch Management
 
-When updating a branch with **$branch update**:
+When updating a Git branch with **$branch update**:
 
-1. Update the feature branch with the latest from main
+1. Update the feature Git branch with the latest from main
 2. Resolve any conflicts
 3. Document the update in the track's context
 4. Update the track's progress 
