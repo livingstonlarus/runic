@@ -24,7 +24,7 @@ In addition to the shared commands in `core/commands.md`, you have access to:
 2. Read `core/memory-structure.md` to understand the memory hierarchy
 3. Read `core/commands.md` for shared command reference
 4. Read `core/rules.md` for project-specific rules
-5. Read `tracks/track-management.md` for track coordination instructions
+5. Read `core/track-management.md` for track coordination instructions
 
 ## Memory Management
 

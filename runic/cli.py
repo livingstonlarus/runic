@@ -12,41 +12,6 @@ def cli():
     """Runic - A framework for parallel development with multiple AI agents"""
     pass
 
-@click.command()
-def init():
-    """Initialize Runic in the current project"""
-    # Create .runic directory if it doesn't exist
-    if not os.path.exists('.runic'):
-        os.makedirs('.runic')
-    
-    # Get template directory path
-    template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-    
-    # Copy all template files to .runic
-    for root, dirs, files in os.walk(template_dir):
-        # Get the relative path from template_dir
-        rel_path = os.path.relpath(root, template_dir)
-        
-        # Create the corresponding directory in .runic
-        if rel_path != '.':
-            target_dir = os.path.join('.runic', rel_path)
-            os.makedirs(target_dir, exist_ok=True)
-        else:
-            target_dir = '.runic'
-        
-        # Copy all files in the current directory
-        for file in files:
-            src = os.path.join(root, file)
-            dst = os.path.join(target_dir, file)
-            shutil.copy(src, dst)
-    
-    # Create memory directory structure
-    memory_manager = MemoryManager()
-    memory_manager.ensure_directories()
-    
-    click.echo("Runic initialized successfully!")
-    click.echo("All template files have been copied to .runic directory.")
-
 @click.group()
 def track():
     """Manage development tracks"""
@@ -198,58 +163,218 @@ def integrate():
     """Integration points for external tools"""
     pass
 
-@integrate.command(name="docs")
-@click.argument('url', required=True)
-@click.option('--tool', default='crawl4ai', help='Tool to use for documentation fetching (crawl4ai, etc.)')
-def integrate_docs(url, tool):
-    """Integration point for documentation fetching tools"""
-    click.echo(f"Integration point for {tool} to fetch documentation from {url}")
-    click.echo("To implement this integration:")
-    click.echo(f"1. Install the {tool} package")
-    click.echo(f"2. Create an integration script using the example in IMPLEMENTATION.md")
-    click.echo(f"3. Call your integration script here with: {url}")
+@click.command()
+def init():
+    """Initialize Runic in the current project"""
+    # Create .runic directory if it doesn't exist
+    if not os.path.exists('.runic'):
+        os.makedirs('.runic')
     
-    # This is just a placeholder for the integration point
-    # In a real implementation, you would import and call the appropriate tool
-
-@integrate.command(name="vector-db")
-@click.option('--tool', default='chroma', help='Vector database to use (chroma, faiss, pinecone, etc.)')
-@click.option('--action', default='index', help='Action to perform (index, query)')
-@click.option('--query', help='Query text for search actions')
-def integrate_vector_db(tool, action, query):
-    """Integration point for vector database tools"""
-    click.echo(f"Integration point for {tool} vector database, action: {action}")
+    # Get template directory path (now .runic in the package)
+    template_dir = os.path.join(os.path.dirname(__file__), '.runic')
     
-    if action == 'index':
-        click.echo(f"To implement {tool} indexing:")
-        click.echo(f"1. Install the {tool} package")
-        click.echo(f"2. Create an indexing script using the example in IMPLEMENTATION.md")
-        click.echo(f"3. Call your indexing script here to index memory files")
-    elif action == 'query' and query:
-        click.echo(f"To implement {tool} querying:")
-        click.echo(f"1. Install the {tool} package")
-        click.echo(f"2. Create a query script using the example in IMPLEMENTATION.md")
-        click.echo(f"3. Call your query script here with: {query}")
-    else:
-        click.echo("Please specify a valid action and query (for search actions)")
+    # Create symlinks for all files except memory.templates
+    for root, dirs, files in os.walk(template_dir):
+        # Skip memory.templates directory for symlinking
+        if 'memory.templates' in root:
+            continue
+            
+        # Get the relative path from template_dir
+        rel_path = os.path.relpath(root, template_dir)
+        
+        # Create the corresponding directory in .runic
+        if rel_path != '.':
+            target_dir = os.path.join('.runic', rel_path)
+            os.makedirs(target_dir, exist_ok=True)
+        else:
+            target_dir = '.runic'
+        
+        # Create symlinks for all files in the current directory
+        for file in files:
+            src = os.path.join(root, file)
+            dst = os.path.join(target_dir, file)
+            
+            # Create relative symlink
+            rel_src = os.path.relpath(src, os.path.dirname(dst))
+            create_symlink(rel_src, dst)
+    
+    # Copy memory.templates to memory
+    memory_template_dir = os.path.join(template_dir, 'memory.templates')
+    memory_dir = os.path.join('.runic', 'memory')
+    
+    if os.path.exists(memory_template_dir):
+        # Copy the entire directory
+        shutil.copytree(memory_template_dir, memory_dir, dirs_exist_ok=True)
+    
+    # Create memory directory structure
+    memory_manager = MemoryManager()
+    memory_manager.ensure_directories()
+    
+    click.echo("Runic initialized successfully!")
+    click.echo("Core files have been symlinked and memory templates have been copied to .runic directory.")
 
-@integrate.command(name="llm")
-@click.option('--tool', default='langchain', help='LLM framework to use (langchain, llamaindex, etc.)')
-@click.option('--action', required=True, help='Action to perform with the LLM framework')
-def integrate_llm(tool, action):
-    """Integration point for LLM framework tools"""
-    click.echo(f"Integration point for {tool} LLM framework, action: {action}")
-    click.echo("To implement this integration:")
-    click.echo(f"1. Install the {tool} package")
-    click.echo(f"2. Create an integration script using the example in IMPLEMENTATION.md")
-    click.echo(f"3. Call your integration script here with action: {action}")
+@click.command()
+@click.option('--force', is_flag=True, help='Force update of memory files')
+def update(force):
+    """Update Runic symlinks to point to the latest package files"""
+    if not os.path.exists('.runic'):
+        click.echo("No .runic directory found. Run 'runic init' first.")
+        return
+    
+    # Get template directory path
+    template_dir = os.path.join(os.path.dirname(__file__), '.runic')
+    
+    # Update symlinks
+    updated_links = 0
+    for root, dirs, files in os.walk(template_dir):
+        # Skip memory.templates directory
+        if 'memory.templates' in root:
+            continue
+            
+        # Get the relative path from template_dir
+        rel_path = os.path.relpath(root, template_dir)
+        
+        # Get the corresponding directory in .runic
+        if rel_path != '.':
+            target_dir = os.path.join('.runic', rel_path)
+        else:
+            target_dir = '.runic'
+        
+        # Create the directory if it doesn't exist
+        os.makedirs(target_dir, exist_ok=True)
+        
+        # Update symlinks for all files in the current directory
+        for file in files:
+            src = os.path.join(root, file)
+            dst = os.path.join(target_dir, file)
+            
+            # If the destination exists and is a symlink, update it
+            if os.path.exists(dst):
+                if os.path.islink(dst):
+                    os.unlink(dst)
+                    rel_src = os.path.relpath(src, os.path.dirname(dst))
+                    create_symlink(rel_src, dst)
+                    updated_links += 1
+                elif force:
+                    # If force is specified, backup and replace regular files
+                    backup = f"{dst}.bak"
+                    shutil.copy2(dst, backup)
+                    os.unlink(dst)
+                    rel_src = os.path.relpath(src, os.path.dirname(dst))
+                    create_symlink(rel_src, dst)
+                    updated_links += 1
+                    click.echo(f"Backed up and replaced {dst} (backup at {backup})")
+            else:
+                # If the destination doesn't exist, create the symlink
+                rel_src = os.path.relpath(src, os.path.dirname(dst))
+                create_symlink(rel_src, dst)
+                updated_links += 1
+    
+    click.echo(f"Updated {updated_links} symlinks to point to the latest package files.")
+    
+    # Optionally update memory files if --force is specified
+    if force:
+        memory_template_dir = os.path.join(template_dir, 'memory.templates')
+        memory_dir = os.path.join('.runic', 'memory')
+        
+        # Backup memory directory
+        backup_dir = f"{memory_dir}.bak.{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+        shutil.copytree(memory_dir, backup_dir)
+        click.echo(f"Backed up memory directory to {backup_dir}")
+        
+        # Copy new templates, preserving existing files
+        for root, dirs, files in os.walk(memory_template_dir):
+            rel_path = os.path.relpath(root, memory_template_dir)
+            target_dir = os.path.join(memory_dir, rel_path) if rel_path != '.' else memory_dir
+            os.makedirs(target_dir, exist_ok=True)
+            
+            for file in files:
+                src = os.path.join(root, file)
+                dst = os.path.join(target_dir, file)
+                
+                # Only copy if the file doesn't exist or is newer
+                if not os.path.exists(dst) or os.path.getmtime(src) > os.path.getmtime(dst):
+                    shutil.copy2(src, dst)
+                    click.echo(f"Updated {dst}")
+        
+        click.echo("Memory files have been updated. Previous versions are available in the backup directory.")
 
+@click.command()
+def migrate():
+    """Migrate an existing .runic directory to use symlinks"""
+    if not os.path.exists('.runic'):
+        click.echo("No .runic directory found. Run 'runic init' first.")
+        return
+    
+    # Backup existing .runic directory
+    backup_dir = f".runic.bak.{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+    shutil.copytree('.runic', backup_dir)
+    click.echo(f"Backed up .runic directory to {backup_dir}")
+    
+    # Get template directory path
+    template_dir = os.path.join(os.path.dirname(__file__), '.runic')
+    
+    # Replace core files with symlinks
+    for root, dirs, files in os.walk(template_dir):
+        # Skip memory.templates directory
+        if 'memory.templates' in root:
+            continue
+            
+        # Get the relative path from template_dir
+        rel_path = os.path.relpath(root, template_dir)
+        
+        # Get the corresponding directory in .runic
+        if rel_path != '.':
+            target_dir = os.path.join('.runic', rel_path)
+        else:
+            target_dir = '.runic'
+        
+        # Create the directory if it doesn't exist
+        os.makedirs(target_dir, exist_ok=True)
+        
+        # Replace files with symlinks
+        for file in files:
+            src = os.path.join(root, file)
+            dst = os.path.join(target_dir, file)
+            
+            # If the destination exists, replace it with a symlink
+            if os.path.exists(dst):
+                os.unlink(dst)
+            
+            # Create symlink
+            create_symlink(src, dst)
+    
+    click.echo("Migration complete. Core files have been replaced with symlinks.")
+    click.echo(f"Your original .runic directory has been backed up to {backup_dir}")
+
+def create_symlink(src, dst):
+    """Create a symlink with platform-specific handling"""
+    rel_src = os.path.relpath(src, os.path.dirname(dst))
+    
+    try:
+        # For Windows, we need administrator privileges or developer mode enabled
+        if os.name == 'nt':  # Windows
+            # Check if running with admin privileges or in developer mode
+            try:
+                os.symlink(rel_src, dst)
+            except OSError:
+                # Fall back to copying if symlink creation fails
+                shutil.copy2(src, dst)
+                click.echo(f"Note: Created copy instead of symlink for {dst} (Windows requires admin privileges or developer mode for symlinks)")
+        else:  # Unix-like systems
+            os.symlink(rel_src, dst)
+    except Exception as e:
+        click.echo(f"Warning: Failed to create symlink {dst}: {e}")
+        # Fall back to copying
+        shutil.copy2(src, dst)
 
 # Register commands
-cli.add_command(init)
 cli.add_command(track)
 cli.add_command(mem)
 cli.add_command(integrate)
+cli.add_command(init)
+cli.add_command(update)
+cli.add_command(migrate)
 
 if __name__ == '__main__':
     cli()
