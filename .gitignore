@@ -35,5 +35,5 @@ htmlcov/
 .mypy_cache/
 pytest_cache/
 
-# Runic-generated package files
+# Runic files to help with development of Runic; how meta! 🤯
 .runic/

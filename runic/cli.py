@@ -1,262 +1,244 @@
 import click
 import shutil
 import os
-import glob
 from pathlib import Path
-from runic.docs import Docs
-from runic.memory import Memory
 import importlib.metadata
+from datetime import datetime
+from runic.memory import MemoryManager
 
 @click.group()
 @click.version_option(importlib.metadata.version('runic'))
 def cli():
-    """Runic CLI - LLM Memory & Documentation Enhancement Framework"""
+    """Runic - A framework for parallel development with multiple AI agents"""
     pass
-
-@click.command()
-@click.argument('url', required=True)
-def docs(url):
-    """Fetch documentation from given URL"""
-    try:
-        # Create output directory in .runic/docs
-        docs_dir = Path(".runic/docs")
-        docs_dir.mkdir(parents=True, exist_ok=True)
-
-        # Set the output directory for spider
-        os.environ['RUNIC_DOCS_DIR'] = str(docs_dir)
-
-        # Crawl and process the documentation
-        success = Docs.crawl_website(url)
-        if success:
-            print(f"✅ Documentation fetched successfully from {url}!")
-        else:
-            print(f"❌ Failed to fetch documentation completely from {url}, but some content might have been saved.")
-    except Exception as e:
-        print(f"❌ Failed to fetch documentation from {url}: {str(e)}")
 
 @click.command()
 def init():
     """Initialize Runic in the current project"""
-    # Get templates directory path from package
-    templates_dir = Path(__file__).parent / "templates"
-
-    # Create target directory by copying templates
-    target_dir = Path(".runic")
-    if not target_dir.exists():
-        shutil.copytree(templates_dir, target_dir)
-        print("✅ Runic initialized in this project. Prompt your AI assistant with: 'Follow your instructions in .runic/instruct.md' to begin.")
-    else:
-        print("⚠️ Runic is already initialized in this project.")
-
-
-@click.command()
-@click.argument('paths', nargs=-1, type=click.Path(exists=True))
-def concat(paths):
-    """Concatenate multiple files and directories into a single markdown file"""
-    if not paths:
-        print("❌ No paths provided")
-        return
-
-    # Create concats directory if it doesn't exist
-    concats_dir = Path(".runic/concats")
-    concats_dir.mkdir(parents=True, exist_ok=True)
-
-    # Find the next available file number
-    existing_files = glob.glob(str(concats_dir / "concat*.md"))
-    next_num = 1
-    if existing_files:
-        numbers = [int(Path(f).stem.replace('concat', '')) for f in existing_files]
-        next_num = max(numbers) + 1
-
-    # Create the output file path with padded number
-    output_file = concats_dir / f"concat{str(next_num).zfill(3)}.md"
-
-    # Function to collect all files recursively
-    def collect_files(path):
-        path = Path(path)
-        if path.is_file():
-            return [path] if path.name != '.DS_Store' else []
-        elif path.is_dir():
-            files = []
-            for item in path.rglob('*'):
-                # Skip __pycache__ directories and their contents
-                if '__pycache__' in item.parts:
-                    continue
-                if item.is_file() and item.name != '.DS_Store':
-                    files.append(item)
-            return sorted(files)
-        return []
-
-    # Collect all files from provided paths
-    all_files = []
-    for path in paths:
-        all_files.extend(collect_files(path))
-
-    if not all_files:
-        print("❌ No files found in the provided paths")
-        return
-
-    # Generate the content
-    content = ["# Concatenation of files and directories"]
-
-    # Add path list with hierarchy
-    content.append("## Source Paths:")
-    for path in paths:
-        path = Path(path)
-        if path.is_dir():
-            content.append(f"- 📁 {path} (directory)")
+    # Create .runic directory if it doesn't exist
+    if not os.path.exists('.runic'):
+        os.makedirs('.runic')
+    
+    # Get template directory path
+    template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+    
+    # Copy all template files to .runic
+    for root, dirs, files in os.walk(template_dir):
+        # Get the relative path from template_dir
+        rel_path = os.path.relpath(root, template_dir)
+        
+        # Create the corresponding directory in .runic
+        if rel_path != '.':
+            target_dir = os.path.join('.runic', rel_path)
+            os.makedirs(target_dir, exist_ok=True)
         else:
-            content.append(f"- 📄 {path} (file)")
-    content.append("")
+            target_dir = '.runic'
+        
+        # Copy all files in the current directory
+        for file in files:
+            src = os.path.join(root, file)
+            dst = os.path.join(target_dir, file)
+            shutil.copy(src, dst)
+    
+    # Create memory directory structure
+    memory_manager = MemoryManager()
+    memory_manager.ensure_directories()
+    
+    click.echo("Runic initialized successfully!")
+    click.echo("All template files have been copied to .runic directory.")
 
-    # Add file list
-    content.append("## Included Files:")
-    for file_path in all_files:
-        content.append(f"- {file_path}")
-    content.append("")
+@click.group()
+def track():
+    """Manage development tracks"""
+    pass
 
-    # Add each file's content
-    content.append("## Contents:")
-    for file_path in all_files:
-        content.append(f"### {file_path}")
-        # Map file extensions to code block languages
-        ext_to_lang = {
-            '.ts': 'typescript',
-            '.tsx': 'typescript',
-            '.js': 'javascript',
-            '.jsx': 'javascript',
-            '.py': 'python',
-            '.java': 'java',
-            '.c': 'c',
-            '.cpp': 'cpp',
-            '.cs': 'csharp',
-            '.go': 'go',
-            '.rs': 'rust',
-            '.rb': 'ruby',
-            '.php': 'php',
-            '.swift': 'swift',
-            '.kt': 'kotlin',
-            '.scala': 'scala',
-            '.m': 'objective-c',
-            '.h': 'c',
-            '.sh': 'bash',
-            '.bash': 'bash',
-            '.zsh': 'bash',
-            '.fish': 'fish',
-            '.sql': 'sql',
-            '.html': 'html',
-            '.xml': 'xml',
-            '.css': 'css',
-            '.scss': 'scss',
-            '.less': 'less',
-            '.json': 'json',
-            '.yaml': 'yaml',
-            '.yml': 'yaml',
-            '.md': 'markdown',
-            '.r': 'r',
-            '.dart': 'dart',
-            '.lua': 'lua',
-            '.pl': 'perl',
-            '.groovy': 'groovy',
-            '.dockerfile': 'dockerfile',
-            '.vue': 'vue',
-            '.elm': 'elm',
-            '.ex': 'elixir',
-            '.exs': 'elixir',
-            '.erl': 'erlang',
-            '.fs': 'fsharp',
-            '.fsx': 'fsharp',
-            '.hs': 'haskell',
-            '.lhs': 'haskell'
-        }
+@track.command(name="init")
+@click.argument('name')
+def track_init(name):
+    """Create a new track with the given name"""
+    memory_manager = MemoryManager()
+    memory_manager.ensure_directories()
+    
+    if memory_manager.create_track(name):
+        click.echo(f"Track '{name}' created successfully!")
+        click.echo(f"Edit the track files at:")
+        click.echo(f"  .runic/memory/tracks/{name}/active-context.md")
+        click.echo(f"  .runic/memory/tracks/{name}/progress.md")
+    else:
+        click.echo(f"Track '{name}' already exists!")
 
-        # Get file extension and corresponding language
-        ext = Path(file_path).suffix.lower()
-        lang = ext_to_lang.get(ext, 'plaintext')
+@track.command(name="list")
+def track_list():
+    """List all tracks"""
+    memory_manager = MemoryManager()
+    track_files = memory_manager.get_track_memory_files()
+    
+    if not track_files:
+        click.echo("No tracks found. Create one with 'runic track init <name>'")
+        return
+    
+    click.echo("Available tracks:")
+    for track in sorted(track_files.keys()):
+        click.echo(f"  - {track}")
 
-        content.append(f"```{lang}")
+@track.command(name="status")
+def track_status():
+    """Show status of all tracks"""
+    memory_manager = MemoryManager()
+    track_statuses = memory_manager.get_all_track_statuses()
+    
+    if not track_statuses:
+        click.echo("No tracks found. Create one with 'runic track init <name>'")
+        return
+    
+    click.echo("Track Status:")
+    for track, status in sorted(track_statuses.items()):
+        if status:
+            click.echo(f"  - {track}: {status}")
+        else:
+            click.echo(f"  - {track}: Status not found in progress file")
+
+@click.group()
+def mem():
+    """Manage memory files"""
+    pass
+
+@mem.command(name="update")
+@click.option('--track', help='Update only the specified track')
+def mem_update(track):
+    """Update memory files with timestamps"""
+    memory_manager = MemoryManager()
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    if track:
+        track_dir = os.path.join('.runic/memory/tracks', track)
+        if not os.path.exists(track_dir):
+            click.echo(f"Track '{track}' not found!")
+            return
+        
+        click.echo(f"Updating memory files for track '{track}'...")
+        updated = memory_manager.update_track_timestamps(track, timestamp)
+        click.echo(f"Updated {updated} files.")
+    else:
+        click.echo("Updating all memory files...")
+        result = memory_manager.update_all_timestamps(timestamp)
+        click.echo(f"Updated {result['core']} core files and {result['tracks']} track files.")
+    
+    click.echo("Memory update complete!")
+
+def update_file_timestamp(file_path, timestamp):
+    """Add or update timestamp in a markdown file"""
+    memory_manager = MemoryManager()
+    return memory_manager.update_timestamp(file_path, timestamp)
+
+@mem.command(name="next")
+def mem_next():
+    """Determine and execute next steps based on memory analysis"""
+    memory_manager = MemoryManager()
+    
+    click.echo("Analyzing memory files to determine next steps...")
+    
+    # Get all memory files
+    memory_files = memory_manager.get_all_memory_files()
+    
+    # Check if we have any memory files
+    if not memory_files['core'] and not memory_files['tracks']:
+        click.echo("No memory files found. Initialize memory files first.")
+        return
+    
+    # Analyze progress.md to find next steps
+    progress_file = memory_manager.memory_dir / 'progress.md'
+    if progress_file.exists():
         try:
-            with open(file_path, 'r') as f:
-                content.append(f.read().rstrip())
+            content = progress_file.read_text()
+            # Extract upcoming tasks if available
+            upcoming_match = content.split("## Upcoming Tasks", 1)
+            if len(upcoming_match) > 1:
+                upcoming_tasks = upcoming_match[1].strip()
+                if upcoming_tasks:
+                    click.echo("Based on memory analysis, recommended next steps:")
+                    for line in upcoming_tasks.split('\n'):
+                        if line.strip().startswith('-'):
+                            click.echo(f"  {line.strip()}")
+                else:
+                    click.echo("No upcoming tasks found in progress.md.")
+            else:
+                click.echo("No 'Upcoming Tasks' section found in progress.md.")
         except Exception as e:
-            content.append(f"Error reading file: {str(e)}")
-        content.append("```\n")
+            click.echo(f"Error analyzing progress.md: {e}")
+    else:
+        click.echo("progress.md not found. Create it to track next steps.")
+    
+    # Check for active tracks
+    if memory_files['tracks']:
+        click.echo("\nActive tracks:")
+        for track_name, files in memory_files['tracks'].items():
+            status = memory_manager.get_track_status(track_name)
+            click.echo(f"  - {track_name}: {status or 'No status available'}")
+    
+    click.echo("\nRecommended actions:")
+    click.echo("1. Update memory files with recent changes: runic mem update")
+    click.echo("2. Review track statuses: runic track status")
+    if not memory_files['tracks']:
+        click.echo("3. Initialize your first track: runic track init <name>")
 
-    # Write the concatenated content
-    try:
-        with open(output_file, 'w') as f:
-            f.write('\n'.join(content))
-        print(f"✅ Files concatenated successfully to {output_file}")
-    except Exception as e:
-        print(f"❌ Failed to write concatenated file: {str(e)}")
+@click.group()
+def integrate():
+    """Integration points for external tools"""
+    pass
 
-@click.command()
-@click.argument('path', required=False, type=click.Path(exists=True))
-def tree(path):
-    """Generate a visual tree structure of the project or specified directory"""
-    # Create trees directory if it doesn't exist
-    trees_dir = Path(".runic/trees")
-    trees_dir.mkdir(parents=True, exist_ok=True)
+@integrate.command(name="docs")
+@click.argument('url', required=True)
+@click.option('--tool', default='crawl4ai', help='Tool to use for documentation fetching (crawl4ai, etc.)')
+def integrate_docs(url, tool):
+    """Integration point for documentation fetching tools"""
+    click.echo(f"Integration point for {tool} to fetch documentation from {url}")
+    click.echo("To implement this integration:")
+    click.echo(f"1. Install the {tool} package")
+    click.echo(f"2. Create an integration script using the example in IMPLEMENTATION.md")
+    click.echo(f"3. Call your integration script here with: {url}")
+    
+    # This is just a placeholder for the integration point
+    # In a real implementation, you would import and call the appropriate tool
 
-    # Find the next available file number
-    existing_files = glob.glob(str(trees_dir / "tree*.md"))
-    next_num = 1
-    if existing_files:
-        numbers = [int(Path(f).stem.split('-')[0].replace('tree', '')) for f in existing_files]
-        next_num = max(numbers) + 1
+@integrate.command(name="vector-db")
+@click.option('--tool', default='chroma', help='Vector database to use (chroma, faiss, pinecone, etc.)')
+@click.option('--action', default='index', help='Action to perform (index, query)')
+@click.option('--query', help='Query text for search actions')
+def integrate_vector_db(tool, action, query):
+    """Integration point for vector database tools"""
+    click.echo(f"Integration point for {tool} vector database, action: {action}")
+    
+    if action == 'index':
+        click.echo(f"To implement {tool} indexing:")
+        click.echo(f"1. Install the {tool} package")
+        click.echo(f"2. Create an indexing script using the example in IMPLEMENTATION.md")
+        click.echo(f"3. Call your indexing script here to index memory files")
+    elif action == 'query' and query:
+        click.echo(f"To implement {tool} querying:")
+        click.echo(f"1. Install the {tool} package")
+        click.echo(f"2. Create a query script using the example in IMPLEMENTATION.md")
+        click.echo(f"3. Call your query script here with: {query}")
+    else:
+        click.echo("Please specify a valid action and query (for search actions)")
 
-    # Determine the root directory and create the output filename
-    root_dir = Path(path) if path else Path('.')
-    file_suffix = ''
-    title = '# Current project file structure'
+@integrate.command(name="llm")
+@click.option('--tool', default='langchain', help='LLM framework to use (langchain, llamaindex, etc.)')
+@click.option('--action', required=True, help='Action to perform with the LLM framework')
+def integrate_llm(tool, action):
+    """Integration point for LLM framework tools"""
+    click.echo(f"Integration point for {tool} LLM framework, action: {action}")
+    click.echo("To implement this integration:")
+    click.echo(f"1. Install the {tool} package")
+    click.echo(f"2. Create an integration script using the example in IMPLEMENTATION.md")
+    click.echo(f"3. Call your integration script here with action: {action}")
 
-    if path:
-        # Create a sanitized version of the path for the filename
-        sanitized_path = str(root_dir).lstrip('./').replace('/', '-')
-        file_suffix = f'-{sanitized_path}'
-        title = f'# File structure of {root_dir}'
 
-    # Create the output file path with padded number and optional path suffix
-    output_file = trees_dir / f"tree{str(next_num).zfill(3)}{file_suffix}.md"
-
-    def get_tree(directory, prefix='', is_last=False, exclude_dirs=None):
-        if exclude_dirs is None:
-            exclude_dirs = set()
-
-        # Get all entries in the directory
-        entries = sorted(directory.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower()))
-        entries = [e for e in entries if e.name not in exclude_dirs and not e.name.startswith('.') and e.name != '.DS_Store']
-
-        tree_lines = []
-        for i, entry in enumerate(entries):
-            is_last_entry = i == len(entries) - 1
-            current_prefix = prefix + ('└── ' if is_last_entry else '├── ')
-            tree_lines.append(current_prefix + entry.name + ('/' if entry.is_dir() else ''))
-
-            if entry.is_dir():
-                # Add vertical line for non-last directories
-                next_prefix = prefix + ('    ' if is_last_entry else '│   ')
-                tree_lines.extend(get_tree(entry, next_prefix, is_last_entry, exclude_dirs))
-
-        return tree_lines
-
-    try:
-        # Generate tree structure excluding .runic and node_modules directories
-        tree_lines = [title, '```plaintext']
-        tree_lines.extend(get_tree(root_dir, exclude_dirs={'.runic', 'node_modules', '.DS_Store'}))
-        tree_lines.append('```')
-
-        # Write the tree structure to file
-        with open(output_file, 'w') as f:
-            f.write('\n'.join(tree_lines))
-        print(f"✅ Project tree structure generated successfully in {output_file}")
-    except Exception as e:
-        print(f"❌ Failed to generate tree structure: {str(e)}")
-
+# Register commands
 cli.add_command(init)
-cli.add_command(docs)
-cli.add_command(concat)
-cli.add_command(tree)
+cli.add_command(track)
+cli.add_command(mem)
+cli.add_command(integrate)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     cli()
