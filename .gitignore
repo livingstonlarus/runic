@@ -27,6 +27,7 @@ logs/
 Thumbs.db
 .idea/
 .vscode/
+*.code-workspace
 
 # Coverage & testing files
 .coverage
