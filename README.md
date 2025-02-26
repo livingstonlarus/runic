@@ -5,7 +5,7 @@ Runic is a lightweight framework for parallel development with multiple AI agent
 ## Key Features
 
 - 🧠 **Persistent Project Memory**: Stores and manages project-specific context across sessions
-- 👥 **Parallel Multi-Agent Development**: Run multiple AI agents simultaneously on different tracks
+- 👥 **Parallel Multi-Agent Development**: Run multiple agents simultaneously on different tracks
 - 🔄 **Workflow Guidance**: Natural division of planning and implementation through specialized roles
 - 📚 **Documentation Integration**: Optional integration with documentation fetching tools
 - 🔍 **Token Efficiency**: Minimizes framework overhead to maximize available context
@@ -24,7 +24,7 @@ pip install -e .
 
 ## Core Concept: Parallel Development
 
-Runic enables true parallel development by running multiple AI agents simultaneously:
+Runic enables true parallel development by running multiple agents simultaneously:
 
 - **Orchestrator**: Manages overall project coordination and architecture (planning focus)
 - **Specialists**: Focus on specific domains with deep expertise (implementation focus)
@@ -47,7 +47,7 @@ Runic operates within a layered ecosystem of AI coding tools:
 - **GitHub Copilot** (Microsoft/OpenAI's coding assistant in VS Code)
 
 ### Layer 3: Development Frameworks
-- **Runic** (framework for parallel development with multiple AI agents)
+- **Runic** (framework for parallel development with multiple agents)
 
 Runic is not an alternative to agentic coding interfaces like GitHub Copilot or Cursor. Instead, it's a complementary framework that sits on top of these interfaces, providing structure for organizing development work across multiple tracks and maintaining context across sessions.
 
@@ -112,7 +112,7 @@ Runic agents employ several token optimization strategies when creating and main
 - **Consolidate similar information**: Avoid repeating the same concept
 - **Use examples sparingly**: Include only when necessary for clarity
 
-These techniques are applied throughout Runic's framework files and by agents when maintaining memory files. Even the initial project brief will be optimized by the Orchestrator after discussing requirements with the human user.
+These techniques are applied throughout Runic's framework files and by agents when maintaining memory files. Even the initial project brief will be optimized by the Orchestrator after discussing requirements with the user.
 
 ## Getting Started
 
@@ -134,9 +134,16 @@ These techniques are applied throughout Runic's framework files and by agents wh
    - For the Orchestrator: Use the prompt in the "Initial Prompts" section below
    - For Track Specialists: Use the track-specific prompt
 
+## Commands
+
+### Distinction Between `runic` CLI Commands and `$` Chat Commands
+
+- **`runic` CLI Commands**: These are commands that users or agents can run directly in the terminal. They are used to manage the Runic framework, tracks, memory, and integrations.
+- **`$` Chat Commands**: These are commands that users give to the agents within the chat interface. They instruct the agents to perform specific tasks related to the project, such as managing Git branches.
+
 ## CLI Commands
 
-Runic provides a command-line interface for both humans and AI agents:
+Runic provides a command-line interface for both users and agents:
 
 ### Core Commands
 
@@ -161,10 +168,55 @@ Runic provides a command-line interface for both humans and AI agents:
 - `runic integrate vector-db [--tool=<tool>] [--action=<action>] [--query=<query>]`: Integration point for vector database tools
 - `runic integrate llm --tool=<tool> --action=<action>`: Integration point for LLM framework tools
 
-### Utility Commands (for human use)
+## Chat Commands
 
-- `runic tree`: Generate a tree structure of the current directory and save it to `.runic/forest/`
-- `runic concat <paths...>`: Concatenate multiple files into a single markdown file in `.runic/concats/`
+Runic provides a set of chat commands that users can give to the agents within the chat interface. These commands help manage Git branches, tracks, and memory within the project.
+
+### Git Branch Commands
+
+- **Create a new Git branch**:
+  - Command: `$branch create <name>`
+  - Description: Creates a new Git branch with the specified name.
+
+- **Delete a Git branch**:
+  - Command: `$branch delete <name>`
+  - Description: Deletes the specified Git branch.
+
+- **Merge a Git branch**:
+  - Command: `$branch merge <name>`
+  - Description: Merges the specified Git branch into the current Git branch.
+
+- **List all Git branches**:
+  - Command: `$branch list`
+  - Description: Lists all Git branches in the repository.
+
+### Track Commands
+
+- **Initialize a new track**:
+  - Command: `$track init <name>`
+  - Description: Initializes a new track with the given name.
+
+- **List all tracks**:
+  - Command: `$track list`
+  - Description: Lists all available tracks.
+
+- **Show the status of all tracks**:
+  - Command: `$track status`
+  - Description: Shows the status of all tracks.
+
+### Memory Commands
+
+- **Update all memory files**:
+  - Command: `$mem update`
+  - Description: Updates all memory files with timestamps.
+
+- **Update memory files for a specific track**:
+  - Command: `$mem update track=<name>`
+  - Description: Updates memory files for a specific track.
+
+- **Determine and execute next steps based on memory analysis**:
+  - Command: `$mem next`
+  - Description: Analyzes memory files and suggests next steps.
 
 ## Using Runic
 
@@ -237,7 +289,7 @@ For maximum development velocity:
    ```bash
    # Clone the main repository
    git clone https://github.com/user/project.git project-main
-   
+
    # Clone for each track
    git clone https://github.com/user/project.git project-track1
    git clone https://github.com/user/project.git project-track2
@@ -247,7 +299,7 @@ For maximum development velocity:
    ```bash
    # Create a shared memory directory (e.g., in a cloud drive)
    mkdir -p /path/to/shared/memory
-   
+
    # Symlink the memory directory in each clone
    ln -s /path/to/shared/memory project-main/.runic/memory
    ln -s /path/to/shared/memory project-track1/.runic/memory
@@ -266,7 +318,7 @@ For maximum development velocity:
 
 1. **Enterprise-Grade Development at Startup Speed**: The parallel multi-agent approach delivers the output quality and velocity of a large engineering team while maintaining the agility of a lean operation.
 
-2. **Specialized Expertise Without Specialized Headcount**: Each AI agent can focus deeply on its specific domain, providing specialized expertise across multiple technical areas simultaneously.
+2. **Specialized Expertise Without Specialized Headcount**: Each agent can focus deeply on its specific domain, providing specialized expertise across multiple technical areas simultaneously.
 
 3. **Seamless Integration Across Domains**: The shared memory bank and coordination mechanisms ensure that work across different tracks integrates smoothly, preventing the fragmentation that often occurs in parallel development.
 
@@ -276,7 +328,7 @@ For maximum development velocity:
 
 ## Economic Benefits of Parallel Development
 
-The parallel development approach with multiple AI agents offers significant economic advantages:
+The parallel development approach with multiple agents offers significant economic advantages:
 
 ### Cost-Efficiency
 
@@ -286,7 +338,7 @@ The parallel development approach with multiple AI agents offers significant eco
 
 ### Resource Optimization
 
-1. **Efficient Resource Allocation**: Assign AI agents to tracks based on their specialized capabilities
+1. **Efficient Resource Allocation**: Assign agents to tracks based on their specialized capabilities
 2. **Reduced Context Switching**: Each agent maintains focus on its domain, eliminating productivity loss from switching contexts
 3. **Parallel Problem Solving**: Address multiple challenges simultaneously rather than sequentially
 
@@ -294,7 +346,7 @@ The parallel development approach with multiple AI agents offers significant eco
 
 1. **Faster Time-to-Market**: Accelerate product development cycles by working on multiple components simultaneously
 2. **Competitive Advantage**: Deliver more comprehensive solutions in less time than competitors
-3. **Scalable Development**: Scale development capacity by adding more AI agents as needed
+3. **Scalable Development**: Scale development capacity by adding more agents as needed
 
 ### ROI Calculation
 
@@ -356,31 +408,33 @@ To contribute to Runic:
 
 We welcome contributions of all kinds, including bug reports, feature requests, documentation improvements, and code changes.
 
-### TODO (Internal Development)
+### TODO
 
-#### Framework Optimization
+#### Optimization
 - Rewrite all core files following Token Optimization Techniques
 - Measure token counts before/after optimization
 - Further reduce framework overhead if possible
 - Recount token counts for README in Token Usage > Framework Overhead
 
-#### CLI Development
-- ✅ Build the `runic` CLI script with these commands:
-  - `runic init`: Initialize Runic structure in a project
-  - `runic track init <name>`: Create a new track
-  - `runic track list`: List all tracks
-  - `runic track status`: Show status of all tracks
-  - `runic mem update`: Update memory files
-  - `runic mem update --track=<name>`: Update track-specific memory files
-  - `runic integrate docs <url>`: Integration point for documentation fetching
-  - `runic integrate vector-db`: Integration point for vector database tools
-  - `runic integrate llm`: Integration point for LLM framework tools
+#### CLI Commands
+- ✅ `runic init`: Initialize Runic structure in a project
+- ✅ `runic track init <name>`: Create a new track
+- ✅ `runic track list`: List all tracks
+- ✅ `runic track status`: Show status of all tracks
+- ✅ `runic mem update`: Update memory files
+- ✅ `runic mem update --track=<name>`: Update track-specific memory files
+- ✅ `runic mem next`: Determine and execute next steps based on memory analysis
+- `runic integrate docs <url>`: Integration point for documentation fetching (pending implementation)
+- `runic integrate vector-db`: Integration point for vector database tools (pending implementation)
+- `runic integrate llm`: Integration point for LLM framework tools (pending implementation)
+
+#### Chat Commands
 
 ## Conclusion
 
 Runic represents a paradigm shift in how development projects can be structured and executed. By implementing this framework, you can achieve the comprehensive capabilities typically associated with much larger engineering teams while maintaining the agility of a lean operation.
 
-The true innovation of Runic lies in its ability to simulate the dynamics of a well-coordinated engineering organization through parallel AI agents—delivering enterprise-quality results with startup efficiency.
+The true innovation of Runic lies in its ability to simulate the dynamics of a well-coordinated engineering organization through parallel agents—delivering enterprise-quality results with startup efficiency.
 
 ## License
 
@@ -391,7 +445,7 @@ Runic is open-source software licensed under the MIT License.
 Runic was significantly influenced by the [Cline Memory Bank](https://github.com/cline/cline/blob/2e9e633cdcaa73b8985fa0cbace107352a484cd9/docs/prompting/custom%20instructions%20library/cline-memory-bank.md) approach. We'd like to thank the authors and contributors of that project:
 
 - **Author**: [nickbaumann98](https://github.com/nickbaumann98)
-- **Contributors**: 
+- **Contributors**:
   - [SniperMunyShotz](https://github.com/SniperMunyShotz)
   - [saoudrizwan](https://github.com/saoudrizwan)
 
