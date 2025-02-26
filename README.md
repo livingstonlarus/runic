@@ -1,4 +1,4 @@
-# Runic v1.0
+# ᛤ Runic
 
 Runic is a lightweight framework for parallel development with multiple AI agents. It provides structured memory management, specialized agent roles, and workflow guidance to maximize development velocity. Inspired by frameworks like Cline Memory Bank, Runic enhances Large Language Models (LLMs) with Long-Term Memory (LTM) capabilities and structured knowledge retention.
 
@@ -471,6 +471,18 @@ The true innovation of Runic lies in its ability to simulate the dynamics of a w
 ## License
 
 Runic is open-source software licensed under the MIT License.
+
+## Attribution
+
+The Runic project would be very honored and grateful if you attribute your project with:
+
+```
+<strong>Made by 🤖 with ᛤ <a href="https://pypi.org/project/runic/">Runic</a></strong>
+```
+
+Which should render as:
+
+**Made by 🤖 with ᛤ [Runic](https://pypi.org/project/runic/)**
 
 ## Acknowledgments
 
