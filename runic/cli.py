@@ -60,10 +60,15 @@ def track_init(name):
     memory_manager.ensure_directories()
     
     if memory_manager.create_track(name):
-        click.echo(f"Track '{name}' created successfully!")
+        # Get kebab-case directory name
+        track_dir_name = memory_manager._get_track_dir_name(name)
+        # Get Title Case display name
+        display_name = memory_manager._to_title_case(name)
+        
+        click.echo(f"Track '{display_name}' created successfully!")
         click.echo(f"Edit the track files at:")
-        click.echo(f"  .runic/memory/tracks/{name}/active-context.md")
-        click.echo(f"  .runic/memory/tracks/{name}/progress.md")
+        click.echo(f"  .runic/memory/tracks/{track_dir_name}/active-context.md")
+        click.echo(f"  .runic/memory/tracks/{track_dir_name}/progress.md")
     else:
         click.echo(f"Track '{name}' already exists!")
 
@@ -111,12 +116,18 @@ def mem_update(track):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     if track:
-        track_dir = os.path.join('.runic/memory/tracks', track)
+        # Convert track name to kebab-case for directory path
+        track_dir_name = memory_manager._get_track_dir_name(track)
+        track_dir = os.path.join('.runic/memory/tracks', track_dir_name)
+        
         if not os.path.exists(track_dir):
             click.echo(f"Track '{track}' not found!")
             return
         
-        click.echo(f"Updating memory files for track '{track}'...")
+        # Get Title Case display name
+        display_name = memory_manager._to_title_case(track)
+        
+        click.echo(f"Updating memory files for track '{display_name}'...")
         updated = memory_manager.update_track_timestamps(track, timestamp)
         click.echo(f"Updated {updated} files.")
     else:

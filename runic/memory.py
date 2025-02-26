@@ -44,6 +44,39 @@ class MemoryManager:
         ]
         return [f for f in core_files if f.exists()]
     
+    def _to_kebab_case(self, name: str) -> str:
+        """Convert a string to kebab-case.
+        
+        Args:
+            name: The string to convert.
+            
+        Returns:
+            The kebab-case version of the string.
+        """
+        return name.lower().replace(' ', '-')
+    
+    def _to_title_case(self, name: str) -> str:
+        """Convert a string to Title Case.
+        
+        Args:
+            name: The string to convert.
+            
+        Returns:
+            The Title Case version of the string.
+        """
+        return ' '.join(word.capitalize() for word in name.split())
+    
+    def _get_track_dir_name(self, track_name: str) -> str:
+        """Get the directory name for a track.
+        
+        Args:
+            track_name: The display name of the track.
+            
+        Returns:
+            The kebab-case directory name for the track.
+        """
+        return self._to_kebab_case(track_name)
+    
     def get_track_memory_files(self, track: Optional[str] = None) -> Dict[str, List[Path]]:
         """Get a dictionary of track memory files.
         
@@ -59,7 +92,7 @@ class MemoryManager:
             return result
         
         if track:
-            track_dir = self.tracks_dir / track
+            track_dir = self.tracks_dir / self._get_track_dir_name(track)
             if track_dir.exists() and track_dir.is_dir():
                 track_files = [
                     track_dir / 'active-context.md',
@@ -69,12 +102,15 @@ class MemoryManager:
         else:
             for track_dir in self.tracks_dir.iterdir():
                 if track_dir.is_dir():
-                    track_name = track_dir.name
+                    # For existing tracks, we use the directory name as is
+                    # but for display, we convert it back to Title Case
+                    dir_name = track_dir.name
+                    display_name = self._to_title_case(dir_name.replace('-', ' '))
                     track_files = [
                         track_dir / 'active-context.md',
                         track_dir / 'progress.md'
                     ]
-                    result[track_name] = [f for f in track_files if f.exists()]
+                    result[display_name] = [f for f in track_files if f.exists()]
         
         return result
     
@@ -191,7 +227,12 @@ class MemoryManager:
         Returns:
             True if the track was created, False if it already exists.
         """
-        track_dir = self.tracks_dir / track_name
+        # Convert track name to kebab-case for directory
+        track_dir_name = self._get_track_dir_name(track_name)
+        # Convert track name to Title Case for display
+        display_name = self._to_title_case(track_name)
+        
+        track_dir = self.tracks_dir / track_dir_name
         if track_dir.exists():
             return False
         
@@ -200,11 +241,11 @@ class MemoryManager:
         # Create active-context.md
         active_context_path = track_dir / 'active-context.md'
         with active_context_path.open('w') as f:
-            f.write(f"# {track_name.capitalize()} - Active Context\n\n")
+            f.write(f"# {display_name} - Active Context\n\n")
             f.write("## Purpose\n[Description of track purpose]\n\n")
             f.write("## Current Focus\n[Description of current focus]\n\n")
             f.write("## Special Identity\n")
-            f.write(f"You are a {track_name.capitalize()} Specialist with deep expertise in this domain. ")
+            f.write(f"You are a {display_name} Specialist with deep expertise in this domain. ")
             f.write("You excel at implementing solutions in this area, particularly ")
             f.write("using relevant tools and frameworks. You understand the intricacies ")
             f.write("of the challenges in this domain.\n\n")
@@ -214,13 +255,13 @@ class MemoryManager:
             f.write("- [Domain-specific concept]\n")
             f.write("- [Important technique]\n")
             f.write("- [Integration knowledge]\n\n")
-            f.write(f"When addressing {track_name} implementation, you focus on [key quality attributes] ")
+            f.write(f"When addressing {display_name} implementation, you focus on [key quality attributes] ")
             f.write("to ensure [desired outcome].\n")
         
         # Create progress.md
         progress_path = track_dir / 'progress.md'
         with progress_path.open('w') as f:
-            f.write(f"# {track_name.capitalize()} - Progress\n\n")
+            f.write(f"# {display_name} - Progress\n\n")
             f.write("## Overall Status\n[Brief status description]\n\n")
             f.write("## Completed Tasks\n- [None yet]\n\n")
             f.write("## In Progress\n- [Initial setup]\n\n")
@@ -237,7 +278,8 @@ class MemoryManager:
         Returns:
             The status string, or None if the track or its progress file doesn't exist.
         """
-        progress_path = self.tracks_dir / track_name / 'progress.md'
+        track_dir_name = self._get_track_dir_name(track_name)
+        progress_path = self.tracks_dir / track_dir_name / 'progress.md'
         if not progress_path.exists():
             return None
         
@@ -265,7 +307,8 @@ class MemoryManager:
         
         for track_dir in self.tracks_dir.iterdir():
             if track_dir.is_dir():
-                track_name = track_dir.name
-                result[track_name] = self.get_track_status(track_name)
+                dir_name = track_dir.name
+                display_name = self._to_title_case(dir_name.replace('-', ' '))
+                result[display_name] = self.get_track_status(display_name)
         
         return result 
