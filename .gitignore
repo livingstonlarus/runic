@@ -36,4 +36,4 @@ htmlcov/
 pytest_cache/
 
 # Runic files to help with development of Runic; how meta! 🤯
-.runic/
+/.runic/
