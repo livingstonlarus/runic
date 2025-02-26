@@ -176,47 +176,67 @@ Runic provides a set of chat commands that users can give to the agents within t
 
 - **Create a new Git branch**:
   - Command: `$branch create <name>`
-  - Description: Creates a new Git branch with the specified name.
+  - Description: Creates a new Git branch with the specified name. Specialists should use track-prefixed names.
+  - Usage: For Orchestrator and Specialists
 
 - **Delete a Git branch**:
   - Command: `$branch delete <name>`
-  - Description: Deletes the specified Git branch.
+  - Description: Deletes the specified Git branch. Specialists can only delete branches for their track.
+  - Usage: For Orchestrator and Specialists
 
 - **Merge a Git branch**:
   - Command: `$branch merge <name>`
-  - Description: Merges the specified Git branch into the current Git branch.
+  - Description: Merges the specified Git branch into the main branch.
+  - Usage: For Orchestrator only
 
 - **List all Git branches**:
   - Command: `$branch list`
-  - Description: Lists all Git branches in the repository.
+  - Description: Lists all Git branches in the repository. Shows different views for Orchestrator vs Specialists.
+  - Usage: For Orchestrator and Specialists
+
+- **Update a Git branch**:
+  - Command: `$branch update`
+  - Description: Updates the current branch with latest changes from the main branch.
+  - Usage: For Specialists
+
+- **Mark a branch as ready for merge**:
+  - Command: `$branch ready <name>`
+  - Description: Signals that a branch is ready to be merged into main.
+  - Usage: For Specialists
 
 ### Track Commands
 
 - **Initialize a new track**:
   - Command: `$track init <name>`
-  - Description: Initializes a new track with the given name.
+  - Description: Initializes a new track with the given name and creates an initial Git branch for it.
+  - Usage: For Orchestrator only
 
 - **List all tracks**:
   - Command: `$track list`
   - Description: Lists all available tracks.
+  - Usage: For Orchestrator and Specialists
 
 - **Show the status of all tracks**:
   - Command: `$track status`
   - Description: Shows the status of all tracks.
+  - Usage: For Orchestrator and Specialists
 
 ### Memory Commands
 
 - **Update all memory files**:
   - Command: `$mem update`
   - Description: Updates all memory files with timestamps.
+  - Usage: For Orchestrator and Specialists
 
 - **Update memory files for a specific track**:
   - Command: `$mem update track=<name>`
   - Description: Updates memory files for a specific track.
+  - Usage: For Orchestrator (any track) and Specialists (their track only)
 
 - **Determine and execute next steps based on memory analysis**:
   - Command: `$mem next`
   - Description: Analyzes memory files and suggests next steps.
+  - Usage: For Orchestrator and Specialists
 
 ## Using Runic
 
@@ -429,6 +449,18 @@ We welcome contributions of all kinds, including bug reports, feature requests, 
 - `runic integrate llm`: Integration point for LLM framework tools (pending implementation)
 
 #### Chat Commands
+- ✅ `$track init <name>`: Initialize a new track and create its first branch
+- ✅ `$track list`: List all available tracks
+- ✅ `$track status`: Show the status of all tracks
+- ✅ `$mem update`: Update all memory files with timestamps
+- ✅ `$mem update track=<name>`: Update memory files for a specific track
+- ✅ `$mem next`: Analyze memory files and suggest next steps
+- ✅ `$branch create <name>`: Create a new Git branch
+- ✅ `$branch delete <name>`: Delete a Git branch
+- ✅ `$branch merge <name>`: Merge a Git branch into main
+- ✅ `$branch list`: List all Git branches
+- ✅ `$branch update`: Update feature branch with latest changes from main
+- ✅ `$branch ready <name>`: Signal that a branch is ready to be merged
 
 ## Conclusion
 
