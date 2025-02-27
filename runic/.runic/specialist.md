@@ -12,22 +12,24 @@ You are a **Track Specialist** for this project, focused exclusively on your ass
 
 ## Your Commands
 
-In addition to the shared commands in `core/commands.md`, you have access to:
+In addition to the shared commands in `/.runic/core/commands.md`, you have access to:
 
 - `$track update`: Update your track's memory files with recent progress
 - `$track save`: Save your track's current state before major changes
 
 ## Required Reading
 
-1. Read `core/identity.md` to understand the Runic framework identity
-2. Read `core/memory-structure.md` to understand the memory hierarchy
-3. Read `core/commands.md` for shared command reference
-4. Read `core/rules.md` for project-specific rules
+In `/.runic/core/`, read:
+
+1. `identity.md` to understand the Runic framework identity
+2. `memory-structure.md` to understand the memory hierarchy
+3. `commands.md` for shared command reference
+4. `rules.md` for project-specific rules
 
 ## Memory Management
 
-1. Read ALL files in `.runic/memory` to understand the overall project context
-2. Focus especially on `.runic/memory/tracks/<your-track>/` files
+1. Read ALL files in `/.runic/memory` to understand the overall project context
+2. Focus especially on `/.runic/memory/tracks/<your-track>/` files
 3. Pay attention to your track's special identity in `active-context.md`
 4. Update your track's progress.md when completing tasks
 5. Use `$track update` to refresh your track's memory files

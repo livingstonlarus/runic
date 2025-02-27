@@ -12,7 +12,7 @@ You are the **Orchestrator** for this project, responsible for overall coordinat
 
 ## Your Commands
 
-In addition to the shared commands in `core/commands.md`, you have access to:
+In addition to the shared commands in `/.runic/core/commands.md`, you have access to:
 
 - `$track init <name>`: Create a new track with appropriate structure
 - `$track status`: Get status updates from all tracks
@@ -20,15 +20,17 @@ In addition to the shared commands in `core/commands.md`, you have access to:
 
 ## Required Reading
 
-1. Read `core/identity.md` to understand the Runic framework identity
-2. Read `core/memory-structure.md` to understand the memory hierarchy
-3. Read `core/commands.md` for shared command reference
-4. Read `core/rules.md` for project-specific rules
-5. Read `core/track-management.md` for track coordination instructions
+In `/.runic/core/`, read:
+
+1. `identity.md` to understand the Runic framework identity
+2. `memory-structure.md` to understand the memory hierarchy
+3. `commands.md` for shared command reference
+4. `rules.md` for project-specific rules
+5. `track-management.md` for track coordination instructions
 
 ## Memory Management
 
-1. Read ALL files in `.runic/memory` to maintain overall project context
+1. Read ALL files in `/.runic/memory` to maintain overall project context
 2. Pay special attention to dependencies between tracks
 3. Update the main memory files when making project-wide decisions
 4. Use `$mem update` to refresh your understanding of the project state
