@@ -168,19 +168,34 @@ def init():
     """Initialize Runic in the current project"""
     # Create .runic directory if it doesn't exist
     if not os.path.exists('.runic'):
+        click.echo("Creating .runic directory.")
         os.makedirs('.runic')
     
-    # Get template directory path (now .runic in the package)
-    template_dir = os.path.join(os.path.dirname(__file__), '.runic')
+    # Get the absolute path to the current file (cli.py)
+    cli_file_path = Path(__file__).resolve()
+    
+    # Get the absolute path to the .runic directory in the package
+    package_dir = cli_file_path.parent
+    core_files_dir = package_dir / '.runic'
+    
+    click.echo(f"Using core files directory: {core_files_dir}")
+    
+    # Check if the template directory exists
+    if not core_files_dir.exists():
+        click.echo(f"Error: Core files directory not found at {core_files_dir}")
+        return
     
     # Create symlinks for all files except memory.templates
-    for root, dirs, files in os.walk(template_dir):
+    
+    click.echo("Symlinking core files...")
+    
+    for root, dirs, files in os.walk(str(core_files_dir)):
         # Skip memory.templates directory for symlinking
         if 'memory.templates' in root:
             continue
             
-        # Get the relative path from template_dir
-        rel_path = os.path.relpath(root, template_dir)
+        # Get the relative path from core_files_dir
+        rel_path = os.path.relpath(root, str(core_files_dir))
         
         # Create the corresponding directory in .runic
         if rel_path != '.':
@@ -194,24 +209,25 @@ def init():
             src = os.path.join(root, file)
             dst = os.path.join(target_dir, file)
             
-            # Create relative symlink
-            rel_src = os.path.relpath(src, os.path.dirname(dst))
-            create_symlink(rel_src, dst)
+            # Create absolute symlink
+            os.symlink(src, dst)
+    
     
     # Copy memory.templates to memory
-    memory_template_dir = os.path.join(template_dir, 'memory.templates')
-    memory_dir = os.path.join('.runic', 'memory')
+    click.echo("Copying memory templates...")
     
-    if os.path.exists(memory_template_dir):
+    memory_core_files_dir = core_files_dir / 'memory.templates'
+    memory_dir = Path('.runic') / 'memory'
+    
+    if memory_core_files_dir.exists():
         # Copy the entire directory
-        shutil.copytree(memory_template_dir, memory_dir, dirs_exist_ok=True)
+        shutil.copytree(str(memory_core_files_dir), str(memory_dir), dirs_exist_ok=True)
     
     # Create memory directory structure
     memory_manager = MemoryManager()
     memory_manager.ensure_directories()
-    
-    click.echo("Runic initialized successfully!")
-    click.echo("Core files have been symlinked and memory templates have been copied to .runic directory.")
+
+    click.echo("✅ Runic initialized successfully!")
 
 @click.command()
 @click.option('--force', is_flag=True, help='Force update of memory files')
@@ -221,18 +237,29 @@ def update(force):
         click.echo("No .runic directory found. Run 'runic init' first.")
         return
     
-    # Get template directory path
-    template_dir = os.path.join(os.path.dirname(__file__), '.runic')
+    # Get the absolute path to the current file (cli.py)
+    cli_file_path = Path(__file__).resolve()
+    
+    # Get the absolute path to the .runic directory in the package
+    package_dir = cli_file_path.parent
+    core_files_dir = package_dir / '.runic'
+    
+    click.echo(f"Core files directory: {core_files_dir}")
+    
+    # Check if the template directory exists
+    if not core_files_dir.exists():
+        click.echo(f"Error: Core files directory not found at {core_files_dir}")
+        return
     
     # Update symlinks
     updated_links = 0
-    for root, dirs, files in os.walk(template_dir):
+    for root, dirs, files in os.walk(str(core_files_dir)):
         # Skip memory.templates directory
         if 'memory.templates' in root:
             continue
             
-        # Get the relative path from template_dir
-        rel_path = os.path.relpath(root, template_dir)
+        # Get the relative path from core_files_dir
+        rel_path = os.path.relpath(root, core_files_dir)
         
         # Get the corresponding directory in .runic
         if rel_path != '.':
@@ -252,39 +279,36 @@ def update(force):
             if os.path.exists(dst):
                 if os.path.islink(dst):
                     os.unlink(dst)
-                    rel_src = os.path.relpath(src, os.path.dirname(dst))
-                    create_symlink(rel_src, dst)
+                    create_symlink(src, dst)
                     updated_links += 1
                 elif force:
                     # If force is specified, backup and replace regular files
                     backup = f"{dst}.bak"
                     shutil.copy2(dst, backup)
                     os.unlink(dst)
-                    rel_src = os.path.relpath(src, os.path.dirname(dst))
-                    create_symlink(rel_src, dst)
+                    create_symlink(src, dst)
                     updated_links += 1
                     click.echo(f"Backed up and replaced {dst} (backup at {backup})")
             else:
                 # If the destination doesn't exist, create the symlink
-                rel_src = os.path.relpath(src, os.path.dirname(dst))
-                create_symlink(rel_src, dst)
+                create_symlink(src, dst)
                 updated_links += 1
     
     click.echo(f"Updated {updated_links} symlinks to point to the latest package files.")
     
     # Optionally update memory files if --force is specified
     if force:
-        memory_template_dir = os.path.join(template_dir, 'memory.templates')
-        memory_dir = os.path.join('.runic', 'memory')
+        memory_core_files_dir = core_files_dir / 'memory.templates'
+        memory_dir = Path('.runic') / 'memory'
         
         # Backup memory directory
-        backup_dir = f"{memory_dir}.bak.{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-        shutil.copytree(memory_dir, backup_dir)
+        backup_dir = f"{memory_dir}.bak.{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        shutil.copytree(str(memory_dir), str(backup_dir))
         click.echo(f"Backed up memory directory to {backup_dir}")
         
         # Copy new templates, preserving existing files
-        for root, dirs, files in os.walk(memory_template_dir):
-            rel_path = os.path.relpath(root, memory_template_dir)
+        for root, dirs, files in os.walk(memory_core_files_dir):
+            rel_path = os.path.relpath(root, memory_core_files_dir)
             target_dir = os.path.join(memory_dir, rel_path) if rel_path != '.' else memory_dir
             os.makedirs(target_dir, exist_ok=True)
             
@@ -307,21 +331,32 @@ def migrate():
         return
     
     # Backup existing .runic directory
-    backup_dir = f".runic.bak.{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-    shutil.copytree('.runic', backup_dir)
+    backup_dir = f".runic.bak.{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    shutil.copytree('.runic', str(backup_dir))
     click.echo(f"Backed up .runic directory to {backup_dir}")
     
-    # Get template directory path
-    template_dir = os.path.join(os.path.dirname(__file__), '.runic')
+    # Get the absolute path to the current file (cli.py)
+    cli_file_path = Path(__file__).resolve()
+    
+    # Get the absolute path to the .runic directory in the package
+    package_dir = cli_file_path.parent
+    core_files_dir = package_dir / '.runic'
+    
+    click.echo(f"Using template directory: {core_files_dir}")
+    
+    # Check if the template directory exists
+    if not core_files_dir.exists():
+        click.echo(f"Error: Template directory not found at {core_files_dir}")
+        return
     
     # Replace core files with symlinks
-    for root, dirs, files in os.walk(template_dir):
+    for root, dirs, files in os.walk(str(core_files_dir)):
         # Skip memory.templates directory
         if 'memory.templates' in root:
             continue
             
-        # Get the relative path from template_dir
-        rel_path = os.path.relpath(root, template_dir)
+        # Get the relative path from core_files_dir
+        rel_path = os.path.relpath(root, core_files_dir)
         
         # Get the corresponding directory in .runic
         if rel_path != '.':
@@ -342,27 +377,25 @@ def migrate():
                 os.unlink(dst)
             
             # Create symlink
-            create_symlink(src, dst)
+            os.symlink(src, dst)
     
     click.echo("Migration complete. Core files have been replaced with symlinks.")
     click.echo(f"Your original .runic directory has been backed up to {backup_dir}")
 
 def create_symlink(src, dst):
     """Create a symlink with platform-specific handling"""
-    rel_src = os.path.relpath(src, os.path.dirname(dst))
-    
     try:
         # For Windows, we need administrator privileges or developer mode enabled
         if os.name == 'nt':  # Windows
             # Check if running with admin privileges or in developer mode
             try:
-                os.symlink(rel_src, dst)
+                os.symlink(src, dst)
             except OSError:
                 # Fall back to copying if symlink creation fails
                 shutil.copy2(src, dst)
                 click.echo(f"Note: Created copy instead of symlink for {dst} (Windows requires admin privileges or developer mode for symlinks)")
         else:  # Unix-like systems
-            os.symlink(rel_src, dst)
+            os.symlink(src, dst)
     except Exception as e:
         click.echo(f"Warning: Failed to create symlink {dst}: {e}")
         # Fall back to copying
