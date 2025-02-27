@@ -91,7 +91,7 @@ This token-efficient design minimizes framework overhead (~600 tokens) while max
 
 In real world usage, initializing the Orchestrator with a massive 10 tracks project resulted in API cost of ~$0.50. Including overhead of Cline in Plan mode with full Auto-approve and using model Claude 3.7 Sonnet Thinking (OpenRouter), with rates as of 2025-02-27. Resulting in tokens consumption ⬆ 140K ⬇ 2.5K and context window 25K.
 
-Using Gemini 2.0 Flash Thinking Experimental 01-21 would be free but quota is exhausted too fast (rate limits of 10 RPM (1500 req/day).
+Using Gemini 2.0 Flash Thinking Experimental 01-21 would be free but quota is exhausted too fast (rate limits of 10 RPM (1500 req/day)).
 
 ## Token Optimization Techniques
 
