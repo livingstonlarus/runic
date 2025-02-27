@@ -89,6 +89,8 @@ You can use Runic with any agentic coding interface you prefer, allowing you to 
 
 This token-efficient design minimizes framework overhead (~600 tokens) while maximizing available context for project memory files and actual development work. Agents can focus their token budget on understanding the project rather than processing framework instructions.
 
+In real world usage, initializing the Orchestrator with a massive 10 tracks project resulted in API cost of ~$0.50. Including overhead of Cline in Plan mode with full Auto-approve and using model Claude 3.7 Sonnet Thinking (OpenRouter), with rates as of 2025-02-27. Resulting in tokens consumption ⬆ 140K ⬇ 2.5K and context window 25K.
+
 ## Token Optimization Techniques
 
 Runic agents employ several token optimization strategies when creating and maintaining memory files:
