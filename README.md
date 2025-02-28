@@ -307,6 +307,8 @@ This approach maintains the structured memory benefits of Runic while simplifyin
 
 ### True Parallel Development
 
+![more](https://media1.tenor.com/m/6QCq9E-0LiwAAAAd/star.gif)
+
 For maximum development velocity:
 
 1. **Clone Repository Multiple Times**:
