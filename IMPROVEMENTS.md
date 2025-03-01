@@ -5,9 +5,9 @@ This document outlines proposed improvements to the Runic framework based on use
 ## 1. Configuration-Based Optional Integrations
 
 ### Current Situation
-- Integrations like Pinecone and Crawl4AI are mentioned in the codebase but not fully implemented
+- Agents may need up to date technical documentation for the library it uses
+- Agents currently store memories in flat markdown files
 - Git platform tools are hardcoded without user preference consideration
-- Integration points exist but lack configuration options
 
 ### Proposed Solution: `.runic/config.yaml`
 
@@ -24,12 +24,12 @@ integrations:
     index_name: "runic-memory"
   
   # Documentation fetching
-  crawl4ai:
+  firecrawl:
     enabled: false  # Disabled by default
   
   # Git platform preference
   git:
-    platform_cli: "gh"  # Options: "gh" (GitHub), "glab" (GitLab)
+    platform_cli: "gh"  # Options: "gh" (GitHub), "glab" (GitLab), etc.
     
   # Messaging between agents
   upstash:
@@ -41,6 +41,8 @@ integrations:
       url: ${UPSTASH_REDIS_URL}
       token: ${UPSTASH_REDIS_TOKEN}
 ```
+
+!! Would it make sense to enable Qstash or Redis only and not both? Maybe juste enable Upstash, and then individual API keys for Qstash and Redis (if not a unique key for all Upstash service).
 
 ### Implementation Details
 
@@ -54,16 +56,13 @@ integrations:
    - Warn when an integration is enabled but dependencies are missing
    - Suggest installation commands for missing dependencies
 
-3. **CLI Updates**:
-   - Add `runic config` command to view/edit configuration
-   - Add `runic config init` to generate a default configuration file
-
 ## 2. Natural Language Commands vs. Structured Commands
 
 ### Current Situation
 - Chat commands use a specific syntax (e.g., `$mem update`, `$branch create`)
-- CLI commands have a structured format (e.g., `runic track init`)
 - Users need to memorize specific command formats
+- CLI commands have a structured format (e.g., `runic track init`)
+- Need to maintain CLI code
 
 ### Proposed Solution: Leverage LLM Understanding
 
@@ -75,49 +74,24 @@ integrations:
      - "Mark the auth branch as ready for merge" instead of `$branch ready auth`
 
 2. **Implementation Approach**:
-   - Keep the existing command handlers but add a natural language parser
-   - Use pattern matching or simple NLP to map natural language to commands
-   - Maintain backward compatibility with the `$` command syntax
+   - Remove command handlers entierly
+   - Define chat commands as natural language examples, that the LLM should recognize and associate to a set of commands to execute. Ie:
+     - User: I think it's time to wrap up this branch
+     - Agent: You're right, let's submit a PR
+       command: `gh pr create`
+     - In .runic/core/commands.md we may have:
+       If user states the branch is complete or that it's time to submit a PR, you'll execute `<git:platform_cli> pr create`, where `<git:platform_cli>` is the Git platform CLI tool set in `.runic/config.yaml`
+
 
 3. **CLI Command Execution**:
    - Allow agents to directly execute git commands and other CLI operations
    - Trust the LLM's ability to generate correct commands based on context
    - Example: Instead of wrapping `git branch -b feature`, let the agent execute it directly
 
-### Code Example: Natural Language Command Parser
-
-```python
-def parse_natural_language(message: str) -> Optional[Tuple[str, str, List[str]]]:
-    """
-    Parse natural language into commands.
-    
-    Args:
-        message: The natural language message
-        
-    Returns:
-        A tuple of (command_type, subcommand, args) if a command is recognized,
-        or None if no command is recognized
-    """
-    # Memory update patterns
-    if re.search(r'update (?:your |the )?memory', message, re.IGNORECASE):
-        return ('mem', 'update', [])
-    
-    # Branch creation patterns
-    branch_match = re.search(r'create (?:a )?(?:new )?branch (?:called |named )?["\']?([a-zA-Z0-9_-]+)["\']?', 
-                            message, re.IGNORECASE)
-    if branch_match:
-        return ('branch', 'create', [branch_match.group(1)])
-    
-    # Continue with other patterns...
-    
-    return None
-```
-
 ## 3. Agent Communication and Coordination
 
 ### Current Situation
 - Agents share memory through files in `.runic/memory/`
-- Coordination happens through Git branches and merge requests
 - No real-time communication between agents
 
 ### Proposed Solution: Enhanced Communication Stack
@@ -126,7 +100,9 @@ def parse_natural_language(message: str) -> Optional[Tuple[str, str, List[str]]]
    - Store internal documentation and project knowledge
    - Index progress logs and decisions for semantic search
    - Enable agents to query project history and context
-   - Keep memory files as the source of truth, with Pinecone as an index
+   - Markdown file are no longer for memory, only for initial instructions
+   - Private collections, per agent / track for context and progress (the Orchestrator can review them)
+   - Shared collections for internal documentation and collaboration between agents
 
 2. **Upstash Qstash for Asynchronous Messaging**:
    - Enable agents to send messages to each other
@@ -140,78 +116,19 @@ def parse_natural_language(message: str) -> Optional[Tuple[str, str, List[str]]]
    - Implement locks to prevent conflicts in parallel operations
    - Enable real-time status updates
 
-### Implementation Architecture
+### Firecrawl Integration (or Firecrawl)
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Orchestrator   │     │  Specialist 1   │     │  Specialist 2   │
-└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                       Runic Framework                           │
-├─────────────────┬─────────────────┬─────────────────┬───────────┤
-│  Memory Files   │    Pinecone     │  Upstash Qstash │   Redis   │
-│  (Source of     │  (Knowledge     │  (Messaging)    │  (State)  │
-│   Truth)        │   Index)        │                 │           │
-└─────────────────┴─────────────────┴─────────────────┴───────────┘
-```
+- Use Firecrawl specifically for fetching and indexing third-party documentation
+- Upload markdown content files scrapped by Firecrawl into Pinecone Assistant, the RAG tool from Pinecone
 
 ### Separation of Concerns
 
 - **Memory Files**: Long-term persistent storage (source of truth)
 - **Pinecone**: Semantic search and retrieval of project knowledge
+- **Pinecone Assistant**: Semantic search and retrieval of tech documentations
 - **Qstash**: Communication and coordination between agents
 - **Redis**: Ephemeral state management and real-time status
 
-### Crawl4AI Integration
+### CLIless
 
-Keep Crawl4AI separate from Pinecone since it has its own vector system:
-
-- Use Crawl4AI specifically for fetching and indexing third-party documentation
-- Allow agents to query both Pinecone (for internal knowledge) and Crawl4AI (for external docs)
-- Implement a unified query interface that searches both systems as needed
-
-## 4. Implementation Roadmap
-
-### Phase 1: Configuration System
-1. Implement `.runic/config.yaml` structure
-2. Add configuration loading and validation
-3. Update CLI to support configuration management
-
-### Phase 2: Natural Language Commands
-1. Implement natural language command parser
-2. Maintain backward compatibility with `$` commands
-3. Add examples and documentation for natural language usage
-
-### Phase 3: Pinecone Integration
-1. Implement Pinecone client and indexing
-2. Add memory file synchronization with Pinecone
-3. Implement semantic search capabilities
-
-### Phase 4: Messaging and State Management
-1. Implement Upstash Qstash integration for messaging
-2. Add Redis integration for state management
-3. Update agent coordination mechanisms
-
-## 5. Backward Compatibility Considerations
-
-To ensure a smooth transition:
-
-1. **Maintain Support for Existing Commands**:
-   - Keep the `$` command syntax working
-   - Support both CLI commands and direct execution
-
-2. **Optional Integrations**:
-   - Make all new integrations truly optional
-   - Ensure core functionality works without any third-party services
-
-3. **Migration Path**:
-   - Provide migration tools for existing projects
-   - Document upgrade process for users
-
-## 6. Conclusion
-
-These improvements aim to make Runic more flexible, natural to use, and powerful while maintaining its core philosophy of lightweight, token-efficient parallel development. By leveraging the natural language capabilities of LLMs and adding optional integrations, Runic can become even more effective without adding unnecessary complexity.
-
-The configuration-based approach ensures that users only enable the features they need, keeping the framework lightweight for simple projects while allowing it to scale up for more complex scenarios.
+To save us the writing and maintenance of CLI commands, we'll document to agents in initial prompts the main basic commands to use for each tool, directly with the tool APIs, using curl. No need for a CLI wrapper. And no need for the tool's CLI or SDK.
